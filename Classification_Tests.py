@@ -105,6 +105,7 @@ def test_images_classification(images_train, labels_train, images_heldout, label
                 finished_CP = True
             if(total_mass_hoeffding>=Hoeffding_bound):
                 finished_hoeffding = True
+    cp_results = np.array(correctness_CP)
 
             
 
