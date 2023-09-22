@@ -107,5 +107,7 @@ def test_images_classification(images_train, labels_train, images_heldout, label
                 finished_hoeffding = True
     cp_results = np.array(correctness_CP)
 
+    return cp_results
+
             
 
