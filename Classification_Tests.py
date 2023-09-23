@@ -2,13 +2,13 @@ import numpy as np
 import tensorflow as tf
 from Models import get_classifier_image
 
-def test_images_classification(images_train, labels_train, images_heldout, labels_heldout,regularization_const, confidence_level=.95):
+def test_images_classification(images_train, labels_train, images_test, labels_test,regularization_const, confidence_level=.95):
 
     #splitting the held out labels and images into calibration and test sets 50/50
-    images_cal, images_test = np.split(images_heldout, [int(.5*len(images_heldout))])
-    labels_cal, labels_test = np.split(labels_heldout, [int(.5*len(labels_heldout))])
+    images_train, images_cal = np.split(images_train, [int(.9*len(images_train))])
+    labels_train, labels_cal = np.split(labels_train, [int(.9*len(labels_train))])
 
-    model = get_classifier_image(2,regularization_const)
+    model = get_classifier_image(2,regularization_const,100)
     model.compile(optimizer='adam',
                     loss='sparse_categorical_crossentropy',
                     metrics=['accuracy'])

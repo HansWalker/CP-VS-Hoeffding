@@ -26,7 +26,7 @@ def main():
 
     regularization_const = .01
     #Get the model
-    test_images_classification(images_train, labels_train, images_heldout, labels_heldout,regularization_const)
+    test_images_classification(cifar_100_train[b'data'], cifar_100_train[b'fine_labels'], cifar_100_test[b'data'], cifar_100_test[b'fine_labels'],regularization_const)
     
 
 def load_data_m_mnist():
@@ -37,7 +37,9 @@ def load_data_m_mnist():
     return images/255,labels,pd.DataFrame.to_numpy(attributes)
 def load_cifar():
     with open("Data/Cifar100/train", 'rb') as fo:
-        dict = pickle.load(fo, encoding='bytes')
-    return dict
+        dict_train = pickle.load(fo, encoding='bytes')
+    with open("Data/Cifar100/test", 'rb') as fo:
+        dict_test = pickle.load(fo, encoding='bytes')
+    return dict_train,dict_test
 if __name__ == '__main__':
     main()
