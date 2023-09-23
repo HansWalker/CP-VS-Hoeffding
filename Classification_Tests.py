@@ -2,44 +2,50 @@ import numpy as np
 import tensorflow as tf
 from Models import get_classifier_image
 
-def test_images_classification(images_train, labels_train, images_test, labels_test,regularization_const, confidence_level=.95):
+def test_images_classification(images_train, labels_train, images_test, labels_test,regularization_const, confidence_level,model_name,previous_model=0):
 
     #splitting the held out labels and images into calibration and test sets 50/50
     images_train, images_cal = np.split(images_train, [int(.9*len(images_train))])
     labels_train, labels_cal = np.split(labels_train, [int(.9*len(labels_train))])
 
-    model = get_classifier_image(2,regularization_const,100)
-    model.compile(optimizer='adam',
-                    loss='sparse_categorical_crossentropy',
-                    metrics=['accuracy'])
-    model.fit(images_train, labels_train, epochs=1)
+    model = get_classifier_image(32,3,1,100,regularization_const)
+
+    if(previous_model):
+        model = model.load_weights(model_name)
+    else:
+        model.compile(optimizer='adam',
+                        loss='sparse_categorical_crossentropy',
+                        metrics=['accuracy'])
+        model.fit(images_train, labels_train, epochs=10, batch_size=32)
+        model.save_weights(model_name)
 
     #Getting the predictions of the calibration set
 
     predictions=model.predict(images_cal)
 
     #Making some edits to the base formula. Using the regression loss formula
-    #Loss is defined as the excess probability mass of the wrong classes predicted
-    #until the right class is reached. The probability mass of the right class is
-    #not counted
+    #Loss is defined as the excess number of classes until the right class is reached
+    #This amkes the maximium error = number of classes-1
 
     #sorting the predictions
     argsort=tf.argsort(predictions,axis=1,direction='DESCENDING')
-    loss_values = []
     prob_mass_values = []
+    class_error_values = []
     #Getting the "regression" error and total probability mass of each prediction
     for next_prediction in range(len(predictions)):
         next_mass = 0
+        class_count = 0
 
         for arg_value in argsort[next_prediction]:
             #If the right class is reached record the loss and probability mass
             if(arg_value == labels_cal[next_prediction]):
-                loss_values.append(next_mass)
-                prob_mass_values.append(next_mass+predictions[next_prediction][arg_value])
+                prob_mass_values.append(next_mass+ predictions[next_prediction,arg_value])
+                class_error_values.append(class_count)
             else:
                 next_mass += predictions[next_prediction,arg_value]
+                class_count += 1
 
-    average_loss = np.mean(loss_values)
+    average_loss = np.mean(class_error_values)
 
     #Get the CP bound for the calibration set
 
@@ -50,7 +56,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
     CP_bound = sorted_cp_values[int(CP_index)]
 
     #Get the Hoeffding bound for the calibration set
-    Hoeffding_bound = average_loss+np.sqrt((1/(2*len(labels_cal)))*np.log(2/(1-confidence_level)))
+    Hoeffding_bound = average_loss+99*np.sqrt((1/(2*len(labels_cal)))*np.log(2/(1-confidence_level)))
 
     #Running test set
     predictions=model.predict(images_test)

@@ -7,26 +7,25 @@ from Classification_Tests import test_images_classification
 import pickle
 
 def main():
+    classification_model_name = "Models/Cifar100_classification_model.h5"
     #Load the data
     images,label,attributes=load_data_m_mnist()
 
     cifar_100_train, cifar_100_test=load_cifar()
 
+    cifar_100_train_images = np.reshape(cifar_100_train[b'data'],(np.shape(cifar_100_train[b'data'])[0],32,32,3))/255
+
+    cifar_100_test_images = np.reshape(cifar_100_test[b'data'],(np.shape(cifar_100_test[b'data'])[0],32,32,3))/255
+
+    
+
     #Get rid if the first colum of attributes (id)
     attributes=attributes[:,2:(np.shape(attributes)[1])]
-
-    #Split train images in train and calibration (80/20)
-    images_train, images_heldout = np.split(images, [int(.8*len(images))])
-    
-    #Split of labels
-    labels_train, labels_heldout = np.split(label, [int(.8*len(label))])
-    #Split of attributes
-    attributes_train, attributes_heldout = np.split(attributes, [int(.8*len(attributes))])
 
 
     regularization_const = .01
     #Get the model
-    test_images_classification(cifar_100_train[b'data'], cifar_100_train[b'fine_labels'], cifar_100_test[b'data'], cifar_100_test[b'fine_labels'],regularization_const)
+    test_images_classification(cifar_100_train_images, cifar_100_train[b'fine_labels'], cifar_100_test_images, cifar_100_test[b'fine_labels'],regularization_const,classification_model_name,0)
     
 
 def load_data_m_mnist():
