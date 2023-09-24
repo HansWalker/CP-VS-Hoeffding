@@ -8,7 +8,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
     images_train, images_cal = np.split(images_train, [int(.9*len(images_train))])
     labels_train, labels_cal = np.split(labels_train, [int(.9*len(labels_train))])
 
-    model = get_classifier_image(32,3,1,100,regularization_const)
+    model = get_classifier_image(32,3,4,100,regularization_const)
 
     if(previous_model):
         model = model.load_weights(model_name)
@@ -73,16 +73,16 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
     #Getting the "regression" error and total probability mass of each prediction
     for next_prediction in range(len(predictions)):
 
-        #Array is correctness, excess number of classes, excess probability mass
+        #Array is correctness, excess count
         found = False
         finished_CP = False
-        next_cp = [0,0,0]
+        next_cp = [0,0]
 
         finished_hoeffding = False
-        next_hoeffding = [0,0,0]
+        next_hoeffding = [0,0]
 
         total_mass_cp = 0
-        total_mass_hoeffding = -predictions[next_prediction,argsort[next_prediction,0]]
+        total_count_hoeffding = 0
         for arg_value in argsort[next_prediction]:
             #If the right class is reached record the loss and probability mass
             if(finished_CP and finished_hoeffding):
@@ -93,7 +93,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
 
                 #Updating the total mass
                 total_mass_cp+=predictions[next_prediction,arg_value]
-                total_mass_hoeffding+=predictions[next_prediction,arg_value]
+                total_count_hoeffding+=1
 
                 if(not finished_CP):
                     next_cp[2]+=predictions[next_prediction,arg_value]
