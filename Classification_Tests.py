@@ -91,14 +91,11 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
             #Recording excess number of classes beyond the found one
             if(found):
 
-                #Updating the total mass
-                total_mass_cp+=predictions[next_prediction,arg_value]
-                total_count_hoeffding+=1
-
+                #Updating the total counts/mass
                 if(not finished_CP):
-                    next_cp[2]+=predictions[next_prediction,arg_value]
+                    total_mass_cp+=predictions[next_prediction,arg_value]
                 if(not finished_hoeffding):
-                    next_hoeffding[2]+=predictions[next_prediction,arg_value]
+                    total_count_hoeffding+=1
             else:
                 if(arg_value == labels_test[next_prediction]):
                     found = True
