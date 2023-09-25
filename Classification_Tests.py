@@ -83,6 +83,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
 
         total_mass_cp = 0
         total_count_hoeffding = 0
+        excess_count = 0
         for arg_value in argsort[next_prediction]:
             #If the right class is reached record the loss and probability mass
             if(finished_CP and finished_hoeffding):
