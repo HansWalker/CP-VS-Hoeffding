@@ -7,7 +7,7 @@ from Classification_Tests import test_images_classification
 import pickle
 
 def main():
-    classification_model_name = "Models/Cifar100_classification_model.h5"
+    classification_model_name = "Models/Cifar100_classification_model"
     #Load the data
     images,label,attributes=load_data_m_mnist()
 

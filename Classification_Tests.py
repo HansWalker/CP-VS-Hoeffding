@@ -41,6 +41,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
             if(arg_value == labels_cal[next_prediction]):
                 prob_mass_values.append(next_mass+ predictions[next_prediction,arg_value])
                 class_error_values.append(class_count)
+                break
             else:
                 next_mass += predictions[next_prediction,arg_value]
                 class_count += 1
@@ -66,11 +67,12 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
     #Hoeffding bound is the total mass outside of the top class
 
     argsort=tf.argsort(predictions,axis=1,direction='DESCENDING')
-    correctness_CP = []
 
-    correctness_Hoeffding = []
 
-    #Getting the "regression" error and total probability mass of each prediction
+    prob_mass_values = []
+    class_error_values = []
+
+    #Getting the "regression" error and total probability mass of each prediction for the test set
     for next_prediction in range(len(predictions)):
         next_mass = 0
         class_count = 0
@@ -80,13 +82,39 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
             if(arg_value == labels_cal[next_prediction]):
                 prob_mass_values.append(next_mass+ predictions[next_prediction,arg_value])
                 class_error_values.append(class_count)
+                break
             else:
                 next_mass += predictions[next_prediction,arg_value]
                 class_count += 1
-    
-    cp_results = np.array(correctness_CP)
+    correct_cp = 0
+    correct_hoeffding = 0
 
-    return cp_results
+    excess_cp = []
+    excess_hoeffding = []
+
+    for i in range(len(prob_mass_values)):
+        #Checking for correctness of the bounds
+        if(CP_bound >= prob_mass_values[i]):
+            correct_cp += 1
+        if(Hoeffding_bound >= class_error_values[i]):
+            correct_hoeffding += 1
+        
+        excess_cp.append(CP_bound-prob_mass_values[i])
+        excess_hoeffding.append(Hoeffding_bound-class_error_values[i])
+
+    CP_correct_ratio = correct_cp/len(prob_mass_values)
+    Hoeffding_correct_ratio = correct_hoeffding/len(prob_mass_values)
+
+    sorted_CP = np.sort(excess_cp, kind = "mergesort")
+    sorted_Hoeffding = np.sort(excess_hoeffding, kind = "mergesort")
+
+    excess_cp = sorted_CP[int(confidence_level*len(prob_mass_values))]
+    excess_hoeffding = sorted_Hoeffding[int(confidence_level*len(prob_mass_values))]
+
+    print("Number of correct classes for CP bound: ", correct_cp)
+    print("Excess probability mass for CP bound: ", excess_cp)
+    print("Number of correct classes for Hoeffding bound: ", correct_hoeffding)
+    print("Excess number of predicted classes for Hoeffding bound: ", excess_hoeffding)
 
             
 
