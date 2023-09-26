@@ -72,43 +72,18 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
 
     #Getting the "regression" error and total probability mass of each prediction
     for next_prediction in range(len(predictions)):
+        next_mass = 0
+        class_count = 0
 
-        #Array is correctness, excess count
-        found = False
-        finished_CP = False
-        next_cp = [0,0]
-
-        finished_hoeffding = False
-        next_hoeffding = [0,0]
-
-        total_mass_cp = 0
-        total_count_hoeffding = 0
-        excess_count = 0
         for arg_value in argsort[next_prediction]:
             #If the right class is reached record the loss and probability mass
-            if(finished_CP and finished_hoeffding):
-                break
-            
-            #Recording excess number of classes beyond the found one
-            if(found):
-
-                #Updating the total counts/mass
-                if(not finished_CP):
-                    total_mass_cp+=predictions[next_prediction,arg_value]
-                if(not finished_hoeffding):
-                    total_count_hoeffding+=1
+            if(arg_value == labels_cal[next_prediction]):
+                prob_mass_values.append(next_mass+ predictions[next_prediction,arg_value])
+                class_error_values.append(class_count)
             else:
-                if(arg_value == labels_test[next_prediction]):
-                    found = True
-                else:
-                    if(not finished_CP):
-                        next_cp[1]+=1
-                    if(not finished_hoeffding):
-                        next_hoeffding[1]+=1
-            if(total_mass_cp>=CP_bound):
-                finished_CP = True
-            if(total_mass_hoeffding>=Hoeffding_bound):
-                finished_hoeffding = True
+                next_mass += predictions[next_prediction,arg_value]
+                class_count += 1
+    
     cp_results = np.array(correctness_CP)
 
     return cp_results
