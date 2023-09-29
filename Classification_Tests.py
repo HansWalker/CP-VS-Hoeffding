@@ -17,7 +17,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
                         loss='sparse_categorical_crossentropy',
                         metrics=['accuracy'])
         model.fit(images_train, labels_train, epochs=10, batch_size=32)
-        model.save_weights(model_name)
+        #model.save_weights(model_name)
 
     #Getting the predictions of the calibration set
 
@@ -79,7 +79,7 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
 
         for arg_value in argsort[next_prediction]:
             #If the right class is reached record the loss and probability mass
-            if(arg_value == labels_cal[next_prediction]):
+            if(arg_value == labels_test[next_prediction]):
                 prob_mass_values.append(next_mass+ predictions[next_prediction,arg_value])
                 class_error_values.append(class_count)
                 break
@@ -105,15 +105,15 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
     CP_correct_ratio = correct_cp/len(prob_mass_values)
     Hoeffding_correct_ratio = correct_hoeffding/len(prob_mass_values)
 
-    sorted_CP = np.sort(excess_cp, kind = "mergesort")
-    sorted_Hoeffding = np.sort(excess_hoeffding, kind = "mergesort")
+    sorted_CP = np.sort(excess_cp)
+    sorted_Hoeffding = np.sort(excess_hoeffding)
 
-    excess_cp = sorted_CP[int(confidence_level*len(prob_mass_values))]
-    excess_hoeffding = sorted_Hoeffding[int(confidence_level*len(prob_mass_values))]
+    excess_cp = sorted_CP[int((1-confidence_level)*len(prob_mass_values))]
+    excess_hoeffding = sorted_Hoeffding[int((1-confidence_level)*len(prob_mass_values))]
 
-    print("Number of correct classes for CP bound: ", correct_cp)
+    print("Number of correct classes for CP bound: ", CP_correct_ratio)
     print("Excess probability mass for CP bound: ", excess_cp)
-    print("Number of correct classes for Hoeffding bound: ", correct_hoeffding)
+    print("Number of correct classes for Hoeffding bound: ", Hoeffding_correct_ratio)
     print("Excess number of predicted classes for Hoeffding bound: ", excess_hoeffding)
 
             

@@ -25,7 +25,7 @@ def main():
 
     regularization_const = .01
     #Get the model
-    test_images_classification(cifar_100_train_images, cifar_100_train[b'fine_labels'], cifar_100_test_images, cifar_100_test[b'fine_labels'],regularization_const,classification_model_name,0)
+    test_images_classification(cifar_100_train_images, cifar_100_train[b'fine_labels'], cifar_100_test_images, cifar_100_test[b'fine_labels'],regularization_const,.95,classification_model_name,0)
     
 
 def load_data_m_mnist():
