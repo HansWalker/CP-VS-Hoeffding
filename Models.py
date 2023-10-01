@@ -30,7 +30,7 @@ def get_regressor_image(input_shape,input_channels,number_of_res_blocks, output_
     
     x = tf.keras.layers.Conv2D(filters=1, kernel_size=5, padding='same', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
     x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Dense(output_dim, activation='softmax', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
+    x = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
     
 
     
