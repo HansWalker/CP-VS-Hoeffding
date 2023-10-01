@@ -12,3 +12,6 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
                         loss='sparse_categorical_crossentropy',
                         metrics=['accuracy'])
         model.fit(images_train, labels_train, epochs=10, batch_size=32)
+    
+def negative_loss():
+    
