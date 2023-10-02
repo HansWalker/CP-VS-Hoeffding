@@ -14,4 +14,4 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
         model.fit(images_train, labels_train, epochs=10, batch_size=32)
     
 def negative_loss(y_true, y_pred):
-    loss = -1*tf.
+    loss = -1*tf.losses.mean_squared_error(y_true, y_pred)
