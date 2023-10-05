@@ -36,6 +36,8 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     l1_norm = np.mean(np.abs(predictions-labels_test))
 
+    signed_l1 = predictions-labels_test
+
 
 
     #Sort to get CP
