@@ -36,6 +36,9 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     mse = np.mean(np.square(predictions-labels_test))
 
+    #Sort to get CP
+    arg_sort = np.argsort(predictions)
+
 
     
 def negative_loss(y_true, y_pred):
