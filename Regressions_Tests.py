@@ -32,12 +32,14 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     #calculate MSE
 
-    Max_mse = np.mean(np.square(predictions_max-labels_test))
+    Max_l1 = np.mean(np.abs(predictions_max-labels_test))
 
-    mse = np.mean(np.square(predictions-labels_test))
+    l1_norm = np.mean(np.abs(predictions-labels_test))
+
+
 
     #Sort to get CP
-    arg_sort = np.argsort(predictions)
+    arg_sort = np.argsort(mse)
 
 
     
