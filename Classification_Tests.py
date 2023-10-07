@@ -118,3 +118,9 @@ def test_images_classification(images_train, labels_train, images_test, labels_t
 
             
 
+def pin_ball_loss(quantile, low, high):
+    #pinball loss function for quantile regression
+
+    loss = tf.keras.backend.mean(tf.keras.backend.maximum(quantile*(low-high), (quantile-1)*(low-high)))
+
+    return loss
