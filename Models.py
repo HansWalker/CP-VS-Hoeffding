@@ -20,7 +20,7 @@ def get_classifier_image(input_shape,input_channels,number_of_res_blocks, output
 
     return model
 
-def get_regressor_image(input_shape,input_channels,number_of_res_blocks, output_dim, regularization_const=0.01):
+def get_regressor_image_quantile(input_shape,input_channels,number_of_res_blocks, output_dim, regularization_const=0.01):
     #Function whcih returns a model to perform classification of Mnist digits
     input = tf.keras.layers.Input(shape=(input_shape,input_shape,input_channels))
     x = tf.keras.layers.Conv2D(filters=64, kernel_size=5, padding='same', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(input)
@@ -30,11 +30,23 @@ def get_regressor_image(input_shape,input_channels,number_of_res_blocks, output_
     
     x = tf.keras.layers.Conv2D(filters=1, kernel_size=5, padding='same', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
     x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
     
+    #Low quantile prediction
+    x1 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
+    x1 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
+    x1 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
+
+    low_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
+
+    #High quantile prediction
+    x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
+    x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
+    x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
+    
+    high_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
 
     
-    model = tf.keras.Model(inputs=input, outputs=x)
+    model = tf.keras.Model(inputs=input, outputs=[low_prediction, high_prediction])
 
     return model
 
