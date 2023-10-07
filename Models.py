@@ -36,14 +36,14 @@ def get_regressor_image_quantile(input_shape,input_channels,number_of_res_blocks
     x1 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
     x1 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
 
-    low_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x1)
+    low_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const), name="Low")(x1)
 
     #High quantile prediction
     x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x)
     x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
     x2 = tf.keras.layers.Dense(output_dim*10, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
     
-    high_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const))(x2)
+    high_prediction = tf.keras.layers.Dense(output_dim, activation='linear', kernel_regularizer=tf.keras.regularizers.l2(regularization_const), name="High")(x2)
 
     
     model = tf.keras.Model(inputs=input, outputs=[low_prediction, high_prediction])
