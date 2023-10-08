@@ -1,13 +1,15 @@
 import tensorflow as tf
 import numpy as np
-from Models import get_regressor_image
+from Models import get_regressor_image_quantile, get_regressor_image_base
 def test_images_regression(images_train, labels_train, images_test, labels_test,regularization_const, confidence_level,model_name,previous_model=0):
 
     #splitting the held out labels and images into calibration and test sets 50/50
     images_train, images_cal = np.split(images_train, [int(.9*len(images_train))])
     labels_train, labels_cal = np.split(labels_train, [int(.9*len(labels_train))])
 
-    model = get_regressor_image(32,3,4,1,regularization_const)
+    model_quantile = get_regressor_image(32,3,4,1,regularization_const)
+
+    model_base = get_regressor_image_base(32,3,4,1,regularization_const)
 
     if(previous_model):
         model = model.load_weights(model_name)
