@@ -18,7 +18,7 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
                         loss=tf.losses.mean_squared_error())
         model.fit(images_train, labels_train, epochs=10, batch_size=32)
 
-        model_max_loss = get_regressor_image_quantile(32,3,4,1,regularization_const)
+        model_max_loss = get_regressor_image_base(32,3,4,1,regularization_const)
 
         model_max_loss.compile(optimizer='adam',
                         loss=negative_loss)
