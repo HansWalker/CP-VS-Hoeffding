@@ -42,6 +42,8 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     arg_sorted = np.argsort(signed_l1)
 
+    #Seperating into above and below
+
 
 
 
