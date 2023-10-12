@@ -7,10 +7,6 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
     images_train, images_cal = np.split(images_train, [int(.9*len(images_train))])
     labels_train, labels_cal = np.split(labels_train, [int(.9*len(labels_train))])
 
-    model_quantile = get_regressor_image_quantile(32,3,4,1,regularization_const)
-
-    model_base = get_regressor_image_base(32,3,4,1,regularization_const)
-
     if(previous_model):
         model = model.load_weights(model_name)
     else:
@@ -23,6 +19,10 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
         model_max_loss.compile(optimizer='adam',
                         loss=negative_loss)
         model_max_loss.fit(images_train, labels_train, epochs=10, batch_size=32)
+
+        model_quantile = get_regressor_image_quantile(32,3,4,1,regularization_const)
+
+        model_base = get_regressor_image_base(32,3,4,1,regularization_const)
     
     max_mse = model_max_loss.predict(images_cal)
 
@@ -43,9 +43,6 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
     arg_sorted = np.argsort(signed_l1)
 
 
-
-    #Sort to get CP
-    arg_sort = np.argsort(mse)
 
 
     
