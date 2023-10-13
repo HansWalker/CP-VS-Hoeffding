@@ -21,13 +21,17 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
         model_quantile = get_regressor_image_quantile(32,3,4,1,regularization_const)
 
         model_quantile.compile(optimizer='adam',
-                        loss=pinball_loss_95)
+                        loss={"High": pinball_loss_95, "Low": pinball_loss_05})
+        
+        model_quantile.fit(images_train, {"High": labels_train, "Low": labels_train}, epochs=10, batch_size=32)
 
         model_base = get_regressor_image_base(32,3,4,1,regularization_const)
         
         #Uses l1 loss
         model_base.compile(optimizer='adam',
                            loss = 'mae')
+        
+        model_base.fit(images_train, labels_train, epochs=10, batch_size=32)
     
     max_mse = model_max_loss.predict(images_cal)
 
