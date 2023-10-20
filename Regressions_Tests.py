@@ -41,7 +41,7 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     predictions = model.predict(images_cal)
 
-    #calculate MSE
+    #calculate L1 norm
 
     Max_l1 = np.mean(np.abs(predictions_max-labels_test))
 
