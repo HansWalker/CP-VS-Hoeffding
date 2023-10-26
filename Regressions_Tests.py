@@ -47,7 +47,7 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
 
     
     #Get the Hoeffding bound for the calibration set
-    Hoeffding_bound = l1_norm+Max_l1*np.sqrt((1/(2*len(labels_cal)))*np.log(2/(1-confidence_level)))
+    Hoeffding_bound = np.array(l1_norm+Max_l1*np.sqrt((1/(2*len(labels_cal)))*np.log(2/(1-confidence_level))))
 
     class_bounds = []
     
@@ -64,7 +64,7 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
         # dividing the predictions into high, low and middle
         high_indices = next_labels > predictions_high
         low_indices = next_labels < next_predictions_low
-        middle_indices = next_labels[next_labels <= next_predictions_high[:,i],i]>= next_predictions_low[:,i]
+        middle_indices = np.logical_and(next_labels <= next_predictions_high,next_labels>= next_predictions_low)
 
         #calculating l1 distance for each of the three groups
         high_l1 = next_labels[high_indices] - next_predictions_high[high_indices]
@@ -81,14 +81,38 @@ def test_images_regression(images_train, labels_train, images_test, labels_test,
         class_bounds.append(l1[int(CP_index)])
 
     #convert to tf.tensor
-    class_bounds = tf.convert_to_tensor(class_bounds)
+    class_bounds = np.array(class_bounds)
     #Now doing test set
     
-    predictions_base = model_base.predict(images_test)
+    predictions_base = np.array(model_base.predict(images_test))
 
     
     predictions_high, predictions_low = model_quantile.predict(images_test)
 
+    predictions_high = np.array(predictions_high)
+    predictions_low = np.array(predictions_low)
+
+    Hoeffing_upper = predictions_base + Hoeffding_bound
+    Hoeffing_lower = predictions_base - Hoeffding_bound
+
+    #Dealing with CP bound
+    CP_high = predictions_high + class_bounds
+    CP_low = predictions_low - class_bounds
+
+    #calculating the number of predictions that are outside of the bounds
+    correct_percent_hoef = []
+    correct_percent_cp = []
+
+    for i in range(len(labels_test[0])):
+        next_labels = labels_test[:,i]
+        Hoeffding_correct = np.logical_and(next_labels <= Hoeffing_upper, next_labels>=Hoeffing_lower)
+        CP_correct = np.logical_and(next_labels <= CP_high, next_labels>=CP_low)
+
+        correct_percent_hoef.append(np.sum(Hoeffding_correct)/len(Hoeffding_correct))
+        correct_percent_cp.append(np.sum(CP_correct)/len(CP_correct))
+    
+    print("Correct Hoeffding Percentages: ", correct_percent_hoef)
+    print("Correct CP Percentages: ", correct_percent_cp)
     
 
 
