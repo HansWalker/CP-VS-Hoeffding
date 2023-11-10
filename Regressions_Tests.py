@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 from Models import get_regressor_image_quantile, get_regressor_image_base
+import math
+
 def test_images_regression(images_train, labels_train, images_test, labels_test,regularization_const, confidence_level,model_name,previous_model=0):
 
     #splitting the held out labels and images into calibration and test sets 50/50

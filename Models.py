@@ -83,3 +83,53 @@ def residual_block(x, filters, kernel_size, regularization_const):
     y = tf.keras.layers.LeakyReLU()(y)
     y = tf.keras.layers.Add()([x, y])
     return y
+
+def synthetic_network():
+    #A network to approximate a 1 dimensional function
+    inputs = tf.keras.layers.Input(shape=(1,))
+    x = tf.keras.layers.Dense(100, activation='relu')(inputs)
+
+    #A bunch of fully connect residual layers
+    for i in range(10):
+        x_1 = tf.keras.layers.Dense(100, activation='relu')(x)
+        #Layer norm
+        x = tf.keras.layers.LayerNormalization()(x_1)
+        
+        x = tf.keras.layers.Dense(100, activation='relu')(x)
+
+        x = tf.keras.layers.LayerNormalization()(x)
+        
+        #Addition
+        x = tf.keras.layers.Add()([x_1, x])
+    x = tf.keras.layers.Dense(100, activation='relu')(x)
+    x = tf.keras.layers.Dense(1, activation='linear')(x)
+
+    model = tf.keras.Model(inputs=inputs, outputs=x)
+
+    return model
+
+def synthetic_network_quantile():
+    #A network to approximate a 1 dimensional function
+    inputs = tf.keras.layers.Input(shape=(1,))
+    x = tf.keras.layers.Dense(100, activation='relu')(inputs)
+
+    #A bunch of fully connect residual layers
+    for i in range(10):
+        x_1 = tf.keras.layers.Dense(100, activation='relu')(x)
+        #Layer norm
+        x = tf.keras.layers.LayerNormalization()(x_1)
+        
+        x = tf.keras.layers.Dense(100, activation='relu')(x)
+
+        x = tf.keras.layers.LayerNormalization()(x)
+        
+        #Addition
+        x = tf.keras.layers.Add()([x_1, x])
+    x_low=tf.keras.layers.Dense(100, activation='relu')(x)
+    x_high=tf.keras.layers.Dense(100, activation='relu')(x)
+    x_low = tf.keras.layers.Dense(1, activation='linear', name="Low")(x_low)
+    x_high = tf.keras.layers.Dense(1, activation='linear', name="High")(x_high)
+
+    model = tf.keras.Model(inputs=inputs, outputs=[x_low, x_high])
+
+    return model
